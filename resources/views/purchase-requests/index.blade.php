@@ -3,9 +3,6 @@
         <div class="flex justify-between items-center">
             <h2 class="text-xl font-semibold">Заявки на закупку</h2>
             <div class="flex gap-2">
-                <a href="{{ route('purchase-requests.archived') }}" class="btn btn-secondary">
-                    <i class="fa-solid fa-box-archive"></i> Архив заявок
-                </a>
                 <a href="{{ route('purchase-requests.create') }}" class="btn btn-primary">
                     <i class="fa-solid fa-plus"></i> Новая заявка
                 </a>
@@ -44,15 +41,18 @@
                         </span>
                     </td>
                     <td>{{ $request->requester->name }}</td>
-                    <td>{{ $request->created_at->format('d.m.Y H:i') }}</td>
+                    <td>{{ $request->created_at->setTimezone('Europe/Moscow')->format('d.m.Y H:i') }}</td>
                     <td>
                         <div class="flex gap-2">
+                            @if((Auth::user()->role === 'Manager' || Auth::user()->role === 'Admin') && Route::has('purchase-requests.edit'))
                             <a href="{{ route('purchase-requests.edit', $request->id) }}" class="btn btn-sm btn-warning">
                                 <i class="fa-solid fa-pen"></i> Редактировать
                             </a>
+                            @endif
                             <a href="{{ route('purchase-requests.show', $request->id) }}" class="btn btn-sm btn-info">
                                 <i class="fa-solid fa-eye"></i> Просмотр
                             </a>
+                            @if((Auth::user()->role === 'Manager' || Auth::user()->role === 'Admin') && Route::has('purchase-requests.destroy'))
                             <form action="{{ route('purchase-requests.destroy', $request->id) }}" method="POST" class="inline" onsubmit="return confirm('Вы уверены, что хотите удалить заявку?');">
                                 @csrf
                                 @method('DELETE')
@@ -60,7 +60,8 @@
                                     <i class="fa-solid fa-trash"></i> Удалить
                                 </button>
                             </form>
-                            @if($request->status === 'approved' && !$request->order)
+                            @endif
+                            @if($request->status === 'approved' && !$request->order && Auth::user()->role === 'Admin')
                                 <a href="{{ route('orders.create', ['purchase_request_id' => $request->id]) }}" class="btn btn-sm btn-primary">
                                     <i class="fa-solid fa-file-invoice-dollar"></i> Создать заказ
                                 </a>

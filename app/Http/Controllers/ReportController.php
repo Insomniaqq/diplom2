@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Budget;
+use App\Models\Order;
+use App\Models\PurchaseRequest;
+use Carbon\Carbon;
 
 class ReportController extends Controller
 {
@@ -57,5 +60,65 @@ class ReportController extends Controller
             ];
         }
         return view('reports.suppliers', compact('year', 'data'));
+    }
+
+    public function monthlyNorms()
+    {
+        $departments = \App\Models\Department::with(['materials', 'distributions' => function($query) {
+            $query->whereMonth('created_at', now()->month)
+                  ->whereYear('created_at', now()->year);
+        }])->get();
+
+        $reportData = [];
+        foreach ($departments as $department) {
+            foreach ($department->materials as $material) {
+                $monthlyNorm = $material->pivot->monthly_quantity;
+                $distributedQuantity = $department->distributions
+                    ->where('material_id', $material->id)
+                    ->sum('quantity');
+
+                $reportData[] = [
+                    'department_name' => $department->name,
+                    'material_name' => $material->name,
+                    'monthly_norm' => $monthlyNorm,
+                    'distributed' => $distributedQuantity,
+                    'remaining' => max(0, $monthlyNorm - $distributedQuantity),
+                    'percentage' => $monthlyNorm > 0 ? 
+                        min(100, round(($distributedQuantity / $monthlyNorm) * 100)) : 0
+                ];
+            }
+        }
+
+        return view('reports.monthly_norms', compact('reportData'));
+    }
+
+    public function getDashboardStats()
+    {
+        // Get data for the last 6 months
+        $months = collect([]);
+        $requests = collect([]);
+        $orders = collect([]);
+
+        for ($i = 5; $i >= 0; $i--) {
+            $month = Carbon::now()->subMonths($i);
+            $months->push($month->translatedFormat('F Y')); // Format: 'May 2023'
+
+            $requestsCount = PurchaseRequest::whereYear('created_at', $month->year)
+                ->whereMonth('created_at', $month->month)
+                ->count();
+
+            $ordersCount = Order::whereYear('created_at', $month->year)
+                ->whereMonth('created_at', $month->month)
+                ->count();
+
+            $requests->push($requestsCount);
+            $orders->push($ordersCount);
+        }
+
+        return response()->json([
+            'labels' => $months,
+            'requests' => $requests,
+            'orders' => $orders,
+        ]);
     }
 }

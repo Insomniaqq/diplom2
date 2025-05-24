@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Material;
 use Illuminate\Http\Request;
+use App\Models\MaterialDistribution;
+use App\Models\Department;
 
 class MaterialController extends Controller
 {
@@ -60,7 +62,80 @@ class MaterialController extends Controller
      */
     public function show($id)
     {
-        //
+        $material = Material::with(['departments' => function($query) {
+            $query->with(['distributions' => function($query) {
+                $query->whereMonth('created_at', now()->month)
+                      ->whereYear('created_at', now()->year);
+            }]);
+        }])->findOrFail($id);
+
+        $departments = Department::all();
+        return view('materials.show', compact('material', 'departments'));
+    }
+
+    public function distribute(Request $request, Department $department)
+    {
+        $validated = $request->validate([
+            'material_id' => 'required|exists:materials,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        // Находим материал по ID, полученному из формы
+        $material = \App\Models\Material::findOrFail($validated['material_id']);
+
+        if ($material->current_quantity < $validated['quantity']) {
+            return back()->with('distribution_error', 'Недостаточно материалов на складе.');
+        }
+
+        // Создаем запись о распределении
+        MaterialDistribution::create([
+            'material_id' => $material->id,
+            'department_id' => $department->id, // Используем $department из маршрута
+            'quantity' => $validated['quantity'],
+            'distributed_by' => auth()->id(),
+        ]);
+
+        // Вычитаем количество со склада
+        $material->current_quantity -= $validated['quantity'];
+        $material->save();
+
+        // Check material quantity after distribution and send notification if in warning range
+        if ($material->current_quantity >= 30 && $material->current_quantity <= 60) {
+            // Find users with 'manager' role (adjust roles as needed)
+            $usersToNotify = \App\Models\User::where('role', 'Manager')->get();
+
+            foreach ($usersToNotify as $user) {
+                // Using the existing MonthlyNormExceededNotification, but the message will indicate low stock
+                // You might consider creating a new notification class for low stock specifically if needed.
+                $user->notify(new \App\Notifications\MonthlyNormExceededNotification($material, null, $material->current_quantity)); // Pass quantity instead of percentage
+            }
+        }
+
+        // Проверка месячной нормы после распределения
+        $department = Department::with(['materials' => function($query) use ($material) {
+            $query->where('materials.id', $material->id);
+        }, 'distributions' => function($query) use ($material) {
+            $query->where('material_id', $material->id)
+                  ->whereMonth('created_at', now()->month)
+                  ->whereYear('created_at', now()->year);
+        }])->findOrFail($department->id);
+
+        $monthlyNorm = $department->materials->first()->pivot->monthly_quantity ?? 0;
+        $distributedQuantity = $department->distributions->sum('quantity');
+        $percentage = $monthlyNorm > 0 ? round(($distributedQuantity / $monthlyNorm) * 100) : 0;
+
+        // Отправка уведомления при достижении или превышении 80% нормы
+        if ($monthlyNorm > 0 && $percentage >= 80) {
+            $usersToNotify = \App\Models\User::where('role', 'Admin')
+                                                ->orWhere('role', 'Manager')
+                                                ->get();
+
+            foreach ($usersToNotify as $user) {
+                $user->notify(new \App\Notifications\MonthlyNormExceededNotification($material, $department, $percentage));
+            }
+        }
+
+        return back()->with('distribution_success', 'Материал успешно выдан.');
     }
 
     /**

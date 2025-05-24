@@ -23,7 +23,7 @@ body {
 /* Контейнеры */
 .container {
     max-width: 900px;
-    margin: 40px auto 0 240px;
+    margin: 40px auto 0 auto;
     padding: 2rem 1rem;
 }
 
@@ -225,7 +225,7 @@ h1, h2, h3, h4, h5, h6 {
     display: block;
 }
 .form-input {
-    width: 100%;
+    width: calc(100% - 2.2rem);
     padding: 0.85rem 1rem;
     border: 1px solid var(--border-color);
     border-radius: 0.5rem;
@@ -320,6 +320,12 @@ h1, h2, h3, h4, h5, h6 {
 .card, .table, .alert {
     margin-left: auto;
     margin-right: auto;
+}
+
+/* Стили для страницы входа */
+.login-block {
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
 /* Улучшение ссылок */

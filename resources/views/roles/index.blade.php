@@ -1,9 +1,12 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Роли
+        </h2>
+    </x-slot>
 
-@section('content')
 <div class="container">
-    <h1 class="mb-4">Роли</h1>
-    <a href="{{ route('roles.create') }}" class="btn btn-primary mb-3" style="display:inline-block; margin-bottom:1.2rem; float:right;">Добавить роль</a>
+    
     <div style="clear:both;"></div>
     @if($roles->count())
         <table class="table table-bordered table-striped">
@@ -16,13 +19,19 @@
                 </tr>
             </thead>
             <tbody>
+                @php
+                    $roleTranslations = [
+                        'Admin' => 'Администратор',
+                        'Manager' => 'Зав.склада',
+                        'Employee' => 'Работник склада',
+                    ];
+                @endphp
                 @foreach($roles as $role)
                     <tr>
-                        <td>{{ $role->name }}</td>
+                        <td>{{ $roleTranslations[$role->name] ?? $role->name }}</td>
                         <td>{{ $role->description }}</td>
-                        <td>{{ $role->users->count() }}</td>
+                        <td>{{ $userCounts[$role->id] ?? 0 }}</td>
                         <td>
-                            <a href="{{ route('roles.edit', $role) }}" class="btn btn-sm btn-warning">Редактировать</a>
                             <form action="{{ route('roles.destroy', $role) }}" method="POST" style="display:inline-block;">
                                 @csrf
                                 @method('DELETE')
@@ -37,4 +46,4 @@
         <div class="alert alert-info">Ролей пока нет.</div>
     @endif
 </div>
-@endsection 
+</x-app-layout> 

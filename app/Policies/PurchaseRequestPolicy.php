@@ -14,6 +14,6 @@ class PurchaseRequestPolicy
     {
         // Здесь можно добавить логику проверки прав на утверждение заявок
         // Например, только пользователи с определенной ролью могут утверждать заявки
-        return $user->hasRole('manager') || $user->hasRole('admin');
+        return $user->hasRole('Manager') || $user->hasRole('Admin');
     }
 } 

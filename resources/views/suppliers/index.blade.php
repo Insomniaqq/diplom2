@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    @if(Auth::user()->role === 'admin' || Auth::user()->role === 'manager')
+    @if(Auth::user()->role === 'Admin' || Auth::user()->role === 'Manager')
         <div style="margin-top: 1.2rem; margin-bottom: 1.2rem; display: flex; justify-content: flex-start; align-items: center;">
             <a href="{{ route('suppliers.create') }}" class="btn btn-primary">
                 Добавить поставщика
@@ -40,11 +40,11 @@
                     <td>{{ $supplier->phone }}</td>
                     <td>{{ $supplier->email }}</td>
                     <td>
-                        @if(Auth::user()->role === 'admin' || Auth::user()->role === 'manager')
+                        @if(Auth::user()->role === 'Admin' || Auth::user()->role === 'Manager')
                             <a href="{{ route('suppliers.edit', $supplier) }}" class="btn btn-primary" style="margin-right: 0.5rem;">Редактировать</a>
                         @endif
                         <a href="{{ route('suppliers.show', $supplier->id) }}" class="btn btn-info" style="margin-right: 0.5rem;">Просмотр</a>
-                        @if(Auth::user()->role === 'admin' || Auth::user()->role === 'manager')
+                        @if(Auth::user()->role === 'Admin' || Auth::user()->role === 'Manager')
                             <form action="{{ route('suppliers.destroy', $supplier) }}" method="POST" style="display: inline;">
                                 @csrf
                                 @method('DELETE')

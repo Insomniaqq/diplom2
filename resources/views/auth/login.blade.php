@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <div class="login-block" style="max-width:420px; margin:2.5rem auto; background:linear-gradient(135deg,#e3f0ff 0%,#f8fafc 100%); box-shadow:0 4px 24px rgba(21,101,192,0.10); border-radius:1.2rem; padding:2.7rem 2.2rem 2.2rem 2.2rem;">
+    <div class="login-block" style="width:100%; max-width:420px; background:linear-gradient(135deg,#e3f0ff 0%,#f8fafc 100%); box-shadow:0 4px 24px rgba(21,101,192,0.10); border-radius:1.2rem; padding:2.7rem 2.2rem 2.2rem 2.2rem;">
         <div style="text-align:center; margin-bottom:2.2rem;">
             <span style="display:inline-block; background:#2563eb; color:#fff; border-radius:50%; width:3.5rem; height:3.5rem; line-height:3.5rem; font-size:2rem; margin-bottom:0.7rem;">
                 <i class="fa-solid fa-user-lock"></i>
@@ -14,13 +14,13 @@
             <!-- Email Address -->
             <div style="margin-bottom:1.3rem;">
                 <label for="email" class="form-label" style="font-weight:600; color:#2563eb;">Email</label>
-                <input id="email" class="form-input" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" style="font-size:1.13em; padding:0.9rem 1.1rem; border:1.5px solid #c7d7f5; border-radius:0.7rem; margin-top:0.3em;">
+                <input id="email" class="form-input" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" style=" font-size:1.13em; padding:0.9rem 1.1rem; border:1.5px solid #c7d7f5; border-radius:0.7rem; margin-top:0.3em;">
                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
             </div>
             <!-- Password -->
             <div style="margin-bottom:1.3rem;">
                 <label for="password" class="form-label" style="font-weight:600; color:#2563eb;">Пароль</label>
-                <input id="password" class="form-input" type="password" name="password" required autocomplete="current-password" style="font-size:1.13em; padding:0.9rem 1.1rem; border:1.5px solid #c7d7f5; border-radius:0.7rem; margin-top:0.3em;">
+                <input id="password" class="form-input" type="password" name="password" required autocomplete="current-password" style=" font-size:1.13em; padding:0.9rem 1.1rem; border:1.5px solid #c7d7f5; border-radius:0.7rem; margin-top:0.3em;">
                 <x-input-error :messages="$errors->get('password')" class="mt-2" />
             </div>
             <!-- Remember Me -->

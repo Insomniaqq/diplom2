@@ -20,14 +20,6 @@
         {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
     </head>
     <body class="font-sans text-gray-900 antialiased" style="min-height:100vh; display:flex; flex-direction:column;">
-        <nav class="navbar">
-            <div class="navbar-content">
-                <div class="navbar-links">
-                    <a href="/" class="{{ request()->is('/') ? 'active' : '' }}">Главная</a>
-                    <a href="{{ route('login') }}" class="{{ request()->routeIs('login') ? 'active' : '' }}">Вход</a>
-                </div>
-            </div>
-        </nav>
         <div style="flex:1; display:flex; align-items:center; justify-content:center; min-height:80vh;">
             <main style="width:100%;">
                 <div class="container" style="display:flex; align-items:center; justify-content:center; min-height:unset;">

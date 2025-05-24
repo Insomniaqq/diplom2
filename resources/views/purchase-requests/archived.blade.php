@@ -41,7 +41,7 @@
                                         </span>
                                     </td>
                                     <td>{{ $request->requester->name }}</td>
-                                    <td>{{ $request->archived_at->format('d.m.Y H:i') }}</td>
+                                    <td>{{ $request->archived_at->setTimezone('Europe/Moscow')->format('d.m.Y H:i') }}</td>
                                     <td>
                                         <form action="{{ route('purchase-requests.unarchive', $request) }}" method="POST" class="inline">
                                             @csrf

@@ -25,6 +25,7 @@
                                 <th>Поставщик</th>
                                 <th>Сумма</th>
                                 <th>{{ __('messages.dashboard_table_status') }}</th>
+                                <th>Дата создания</th>
                                 <th>Дата доставки</th>
                                 <th>Дата архивации</th>
                                 <th>Действия</th>
@@ -41,8 +42,9 @@
                                             {{ __('messages.status_' . $order->status) }}
                                         </span>
                                     </td>
-                                    <td>{{ optional($order->expected_delivery_date)->format('d.m.Y') ?? '—' }}</td>
-                                    <td>{{ optional($order->archived_at)->format('d.m.Y H:i') ?? '—' }}</td>
+                                    <td>{{ optional($order->created_at)->setTimezone('Europe/Moscow')->format('d.m.Y H:i') ?? '—' }}</td>
+                                    <td>{{ optional($order->expected_delivery_date)->setTimezone('Europe/Moscow')->format('d.m.Y H:i') ?? '—' }}</td>
+                                    <td>{{ optional($order->archived_at)->setTimezone('Europe/Moscow')->format('d.m.Y H:i') ?? '—' }}</td>
                                     <td>
                                         <form action="{{ route('orders.unarchive', $order) }}" method="POST" class="inline">
                                             @csrf

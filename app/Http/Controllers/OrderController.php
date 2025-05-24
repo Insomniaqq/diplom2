@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Notifications\SystemEventNotification;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderShippedToSupplier;
 
 class OrderController extends Controller
 {
@@ -73,6 +75,9 @@ class OrderController extends Controller
             'created_by' => auth()->id(),
             'total_amount' => $totalAmount,
         ]);
+
+        // Отправка письма поставщику
+        Mail::to($order->supplier->email)->send(new OrderShippedToSupplier($order));
 
         // Уведомление инициатору
         $order->creator->notify(new SystemEventNotification(
@@ -149,6 +154,13 @@ class OrderController extends Controller
             'status_updated_at' => now(),
             'status_updated_by' => auth()->id(),
         ]);
+
+        // Если статус стал 'delivered', пополняем склад
+        if ($order->status === 'delivered') {
+            $material = $order->purchaseRequest->material;
+            $material->current_quantity += $order->purchaseRequest->quantity;
+            $material->save();
+        }
 
         // Уведомление инициатору
         $order->creator->notify(new SystemEventNotification(

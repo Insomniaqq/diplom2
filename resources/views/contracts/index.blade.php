@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="text-xl font-semibold">Контракты</h2>
-            @if(Auth::user()->role === 'admin' || Auth::user()->role === 'manager')
+            @if(Auth::user()->role === 'Admin' || Auth::user()->role === 'Manager')
                 <a href="{{ route('contracts.create') }}" class="btn btn-primary">
                     <i class="fa-solid fa-plus"></i> Новый контракт
                 </a>
@@ -39,12 +39,12 @@
                     <td>{{ $contract->date_start }}</td>
                     <td>{{ $contract->date_end ?? '-' }}</td>
                     <td>{{ number_format($contract->amount, 2) }} ₽</td>
-                    <td>{{ $contract->status }}</td>
+                    <td><span class="status-badge status-{{ $contract->status }}">@if($contract->status == 'active') Активный @elseif($contract->status == 'closed') Закрыт @elseif($contract->status == 'cancelled') Отменен @else {{ $contract->status }} @endif</span></td>
                     <td>
                         <a href="{{ route('contracts.show', $contract->id) }}" class="btn btn-sm btn-info">
                             <i class="fa-solid fa-eye"></i> Просмотр
                         </a>
-                        @if(Auth::user()->role === 'admin' || Auth::user()->role === 'manager')
+                        @if(Auth::user()->role === 'Admin' || Auth::user()->role === 'Manager')
                             <a href="{{ route('contracts.edit', $contract->id) }}" class="btn btn-sm btn-warning">
                                 <i class="fa-solid fa-pen"></i> Редактировать
                             </a>

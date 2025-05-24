@@ -55,75 +55,42 @@
             top: 2px !important;
         }
     </style>
+    <style>
+        .status-badge {
+            display: inline-block;
+            padding: 0.25em 0.5em;
+            font-size: 0.75em;
+            font-weight: 700;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 0.25rem;
+            color: #fff;
+        }
+
+        /* Purchase Request and Order Statuses */
+        .status-pending { background-color: #ffc107; /* Yellow */ }
+        .status-approved { background-color: #28a745; /* Green */ }
+        .status-rejected { background-color: #dc3545; /* Red */ }
+        .status-completed { background-color: #28aa45; /* Darker Green */ }
+        .status-confirmed { background-color: #17a2b8; /* Cyan */ }
+        .status-shipped { background-color: #007bff; /* Blue */ }
+        .status-delivered { background-color: #28a745; /* Green */ }
+        .status-archived { background-color: #6c757d; /* Gray */ }
+        .status-unarchived { background-color: #ffc107; /* Yellow */ }
+
+        /* Contract Statuses */
+        .status-active { background-color: #28a745; /* Green */ }
+        .status-closed { background-color: #6c757d; /* Gray */ }
+        .status-cancelled { background-color: #dc3545; /* Red */ }
+
+        /* Material Statuses (based on quantity) */
+        /* Assuming status-rejected for low quantity and status-approved for sufficient quantity */
+    </style>
 </head>
 <body class="font-sans antialiased">
-    <nav class="navbar">
-        <div class="navbar-content">
-            <div class="navbar-links">
-                <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                    <i class="fa-solid fa-house" style="margin-right:8px;"></i>Главная
-                </a>
-                @if(Auth::user()->role === 'admin')
-                    <a href="{{ route('materials.index') }}" class="{{ request()->routeIs('materials.*') ? 'active' : '' }}">
-                        <i class="fa-solid fa-boxes-stacked" style="margin-right:8px;"></i>Материалы
-                    </a>
-                    <a href="{{ route('suppliers.index') }}" class="{{ request()->routeIs('suppliers.*') ? 'active' : '' }}">
-                        <i class="fa-solid fa-truck-field" style="margin-right:8px;"></i>Поставщики
-                    </a>
-                    <a href="{{ route('contracts.index') }}" class="{{ request()->routeIs('contracts.*') ? 'active' : '' }}">
-                        <i class="fa-solid fa-file-contract" style="margin-right:8px;"></i>Контракты
-                    </a>
-                    <div class="dropdown" style="display:inline-block;">
-                        <a href="#" class="dropdown-toggle {{ request()->routeIs('reports.*') ? 'active' : '' }}" style="padding-right:18px;">
-                            <i class="fa-solid fa-chart-line" style="margin-right:8px;"></i>Аналитика <i class="fa fa-caret-down"></i>
-                        </a>
-                        <div class="dropdown-menu" style="display:none;position:absolute;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.1);z-index:1000;">
-                            <a href="{{ route('reports.budget') }}" class="dropdown-item">Бюджет</a>
-                            <a href="{{ route('reports.requests') }}" class="dropdown-item">Заявки</a>
-                            <a href="{{ route('reports.suppliers') }}" class="dropdown-item">Поставщики</a>
-                        </div>
-                    </div>
-                    <a href="{{ route('purchase-requests.index') }}" class="{{ request()->routeIs('purchase-requests.*') ? 'active' : '' }}">
-                        <i class="fa-solid fa-file-signature" style="margin-right:8px;"></i>Заявки на закупку
-                    </a>
-                    <a href="{{ route('orders.index') }}" class="{{ request()->routeIs('orders.*') ? 'active' : '' }}">
-                        <i class="fa-solid fa-file-invoice-dollar" style="margin-right:8px;"></i>Заказы
-                    </a>
-                @elseif(Auth::user()->role === 'employee')
-                    <a href="{{ route('suppliers.index') }}" class="{{ request()->routeIs('suppliers.*') ? 'active' : '' }}">
-                        <i class="fa-solid fa-truck-field" style="margin-right:8px;"></i>Поставщики
-                    </a>
-                    <a href="{{ route('contracts.index') }}" class="{{ request()->routeIs('contracts.*') ? 'active' : '' }}">
-                        <i class="fa-solid fa-file-contract" style="margin-right:8px;"></i>Контракты
-                    </a>
-                    <a href="{{ route('purchase-requests.index') }}" class="{{ request()->routeIs('purchase-requests.*') ? 'active' : '' }}">
-                        <i class="fa-solid fa-file-signature" style="margin-right:8px;"></i>Заявки на закупку
-                    </a>
-                    <a href="{{ route('orders.index') }}" class="{{ request()->routeIs('orders.*') ? 'active' : '' }}">
-                        <i class="fa-solid fa-file-invoice-dollar" style="margin-right:8px;"></i>Заказы
-                    </a>
-                @endif
-            </div>
-            <div class="user-dropdown">
-                <button class="user-dropdown-trigger" id="userMenuBtn" aria-haspopup="true" aria-expanded="false" style="display:flex;align-items:center;gap:8px;background:transparent;border:none;outline:none;cursor:pointer;padding:10px 18px 10px 14px;border-radius:12px 12px 0 0;font-weight:600;color:#fff;">
-                    <i class="fa-regular fa-user" style="font-size:1.3em;"></i>
-                    <span style="font-size:1.08em;">{{ ucfirst(Auth::user()->name) }}</span>
-                    <i class="fa-solid fa-chevron-down" style="font-size:1em;"></i>
-                </button>
-                <div class="user-dropdown-content dropdown-anim" id="userMenuDropdown" style="background:#fff;padding:18px 22px 10px 18px;border-radius:16px;box-shadow:0 2px 16px rgba(21,101,192,0.13);margin-top:2px;min-width:170px;position:absolute;right:0;z-index:1001;">
-                    <a href="{{ route('profile.show') }}" style="display:flex;align-items:center;gap:10px;font-size:1.08em;color:#2563eb;font-weight:500;padding:6px 0 10px 0;text-decoration:none;">
-                        <i class="fa-regular fa-user" style="font-size:1.15em;"></i>Профиль
-                    </a>
-                    <form method="POST" action="{{ route('logout') }}" style="margin:0;">
-                        @csrf
-                        <button type="submit" style="display:flex;align-items:center;gap:10px;font-size:1.08em;color:#ef4444;font-weight:500;background:none;border:none;outline:none;cursor:pointer;padding:6px 0 0 0;">
-                            <i class="fa-solid fa-arrow-right-to-bracket" style="font-size:1.15em;"></i>Выйти
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
+    
     <div class="notification-dropdown notification-dropdown-fixed">
         @auth
             @php
@@ -178,7 +145,7 @@
             </div>
         </main>
     </div>
-    @include('components.notifications')
+    
     <script>
         // Выпадающее меню профиля (открытие/закрытие с анимацией)
         document.addEventListener('DOMContentLoaded', function() {

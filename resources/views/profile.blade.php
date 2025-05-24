@@ -14,9 +14,9 @@
                 <div style="margin-bottom:0.7em;"><b>Имя:</b> {{ Auth::user()->name }}</div>
                 <div style="margin-bottom:0.7em;"><b>Email:</b> {{ Auth::user()->email }}</div>
                 <div style="margin-bottom:0.7em;"><b>Роль:</b> 
-                    @if(Auth::user()->role === 'admin')
+                    @if(Auth::user()->role === 'Admin')
                         <span style="color:#2563eb;font-weight:600;">Администратор</span>
-                    @elseif(Auth::user()->role === 'manager')
+                    @elseif(Auth::user()->role === 'Manager')
                         <span style="color:#22c55e;font-weight:600;">Менеджер</span>
                     @else
                         <span style="color:#64748b;font-weight:600;">Пользователь</span>

@@ -10,6 +10,8 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\SettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,104 +37,80 @@ Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth');
 
 // Защищенные маршруты
-Route::middleware([
-    'auth:sanctum',
-    'auth'
-])->group(function () {
-Route::get('/', function () {
+Route::middleware(['auth:sanctum', 'auth'])->group(function () {
+    // Общие маршруты для всех авторизованных пользователей
+    Route::get('/', function () {
+        return view('dashboard');
+    });
+
+    Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
 
-    // Маршруты, доступные только администраторам
-    Route::middleware(['admin'])->group(function () {
-        Route::resource('materials', MaterialController::class);
-        Route::resource('budgets', \App\Http\Controllers\BudgetController::class);
-        Route::resource('users', \App\Http\Controllers\UserController::class);
-        // Только админ может утверждать/отклонять/архивировать заявки и заказы
-        Route::post('purchase-requests/{purchaseRequest}/approve', [PurchaseRequestController::class, 'approve'])->name('purchase-requests.approve');
-        Route::post('purchase-requests/{purchaseRequest}/reject', [PurchaseRequestController::class, 'reject'])->name('purchase-requests.reject');
-        Route::post('purchase-requests/{purchaseRequest}/archive', [PurchaseRequestController::class, 'archive'])->name('purchase-requests.archive');
-        Route::post('purchase-requests/{purchaseRequest}/unarchive', [PurchaseRequestController::class, 'unarchive'])->name('purchase-requests.unarchive');
-        Route::post('orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
-        Route::post('orders/{order}/archive', [OrderController::class, 'archive'])->name('orders.archive');
-        Route::post('orders/{order}/unarchive', [OrderController::class, 'unarchive'])->name('orders.unarchive');
-        Route::get('suppliers/create', [SupplierController::class, 'create'])->name('suppliers.create');
-        Route::post('suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
-        Route::get('suppliers/{supplier}/edit', [SupplierController::class, 'edit'])->name('suppliers.edit');
-        Route::put('suppliers/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update');
-        Route::delete('suppliers/{supplier}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
-        Route::get('contracts/create', [\App\Http\Controllers\ContractController::class, 'create'])->name('contracts.create');
-        Route::post('contracts', [\App\Http\Controllers\ContractController::class, 'store'])->name('contracts.store');
-        Route::get('contracts/{contract}/edit', [\App\Http\Controllers\ContractController::class, 'edit'])->name('contracts.edit');
-        Route::put('contracts/{contract}', [\App\Http\Controllers\ContractController::class, 'update'])->name('contracts.update');
-        Route::delete('contracts/{contract}', [\App\Http\Controllers\ContractController::class, 'destroy'])->name('contracts.destroy');
-        Route::get('users/export', [\App\Http\Controllers\UserController::class, 'export'])->name('users.export');
-        Route::get('users/{user}/change-password', [\App\Http\Controllers\UserController::class, 'changePasswordForm'])->name('users.change-password-form');
-        Route::post('users/{user}/change-password', [\App\Http\Controllers\UserController::class, 'changePassword'])->name('users.change-password');
-    });
-
-    // Просмотр архива заявок — для всех авторизованных
-    Route::get('purchase-requests/archived', [PurchaseRequestController::class, 'archived'])->name('purchase-requests.archived');
-
-    // Просмотр архива заказов — для всех авторизованных
-    Route::get('orders/archived', [OrderController::class, 'archived'])->name('orders.archived');
-
-    // Страница профиля
-    Route::get('/profile', function () {
-        return view('profile');
-    })->name('profile.show');
-
-    Route::get('/admin', function () {
-        abort_unless(auth()->user() && auth()->user()->hasRole('admin'), 403);
-        return view('admin');
-    })->name('admin.panel');
+    // Маршрут для получения данных графика активности
+    Route::get('/dashboard-stats', [ReportController::class, 'getDashboardStats']);
 
     Route::get('/help', function () {
         return view('help');
     })->name('help');
 
-    Route::get('/dashboard-stats', function () {
-        $months = collect(range(0, 5))->map(function($i) {
-            return now()->subMonths($i)->format('m.Y');
-        })->reverse()->values();
-        $requests = $months->map(function($month) {
-            [$m, $y] = explode('.', $month);
-            return \App\Models\PurchaseRequest::whereYear('created_at', $y)->whereMonth('created_at', $m)->count();
-        });
-        $orders = $months->map(function($month) {
-            [$m, $y] = explode('.', $month);
-            return \App\Models\Order::whereYear('created_at', $y)->whereMonth('created_at', $m)->count();
-        });
-        return response()->json([
-            'labels' => $months,
-            'requests' => $requests,
-            'orders' => $orders,
-        ]);
+    Route::get('/profile', function () {
+        return view('profile');
+    })->name('profile.show');
+
+    // Маршруты для работников склада
+    Route::middleware(['role:Employee'])->group(function () {
+        Route::resource('materials', MaterialController::class);
+        Route::post('departments/{department}/distribute', [MaterialController::class, 'distribute'])->name('material.distribute');
+        Route::resource('purchase-requests', PurchaseRequestController::class)->except(['edit', 'update', 'destroy', 'approve', 'reject', 'unarchive']);
+        Route::resource('departments', DepartmentController::class);
+        
+        Route::post('purchase-requests/{purchaseRequest}/archive', [PurchaseRequestController::class, 'archive'])->name('purchase-requests.archive');
+        Route::get('purchase-requests/archived', [PurchaseRequestController::class, 'archived'])->name('purchase-requests.archived');
     });
 
-    // Маршруты для управления ролями
-    Route::middleware(['auth', 'admin'])->group(function () {
+    // Маршруты для заведующего складом
+    Route::middleware(['role:Manager'])->group(function () {
+        Route::resource('suppliers', SupplierController::class);
+        Route::resource('contracts', \App\Http\Controllers\ContractController::class);
+        Route::resource('orders', OrderController::class)->except(['updateStatus']);
+        
+        Route::get('/reports/budget', [ReportController::class, 'budget'])->name('reports.budget');
+        Route::get('/reports/requests', [ReportController::class, 'requests'])->name('reports.requests');
+        Route::get('/reports/suppliers', [ReportController::class, 'suppliers'])->name('reports.suppliers');
+        
+        Route::get('orders/archived', [OrderController::class, 'archived'])->name('orders.archived');
+        
+        Route::get('departments/{department}/norms', [ReportController::class, 'monthlyNorms'])->name('departments.norms');
+        
+        Route::post('purchase-requests/{purchaseRequest}/approve', [PurchaseRequestController::class, 'approve'])->name('purchase-requests.approve');
+        Route::post('purchase-requests/{purchaseRequest}/reject', [PurchaseRequestController::class, 'reject'])->name('purchase-requests.reject');
+        
+        Route::post('orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
+        Route::post('orders/{order}/archive', [OrderController::class, 'archive'])->name('orders.archive');
+    });
+
+    // Маршруты только для администраторов
+    Route::middleware(['role:Admin'])->group(function () {
+        Route::get('/admin', function () {
+            return view('admin');
+        })->name('admin.panel');
+
+        Route::resource('budgets', \App\Http\Controllers\BudgetController::class);
+        Route::resource('users', \App\Http\Controllers\UserController::class);
         Route::resource('roles', RoleController::class);
+        
+        Route::get('/reports/monthly-norms', [ReportController::class, 'monthlyNorms'])->name('reports.monthly-norms');
+        
+        Route::get('users/export', [\App\Http\Controllers\UserController::class, 'export'])->name('users.export');
+        Route::get('users/{user}/change-password', [\App\Http\Controllers\UserController::class, 'changePasswordForm'])->name('users.change-password-form');
+        Route::post('users/{user}/change-password', [\App\Http\Controllers\UserController::class, 'changePassword'])->name('users.change-password');
+
+        Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+        Route::post('/settings', [SettingController::class, 'store'])->name('settings.store');
     });
 
-    Route::get('/reports/budget', [ReportController::class, 'budget'])->name('reports.budget');
-    Route::get('/reports/requests', [ReportController::class, 'requests'])->name('reports.requests');
-    Route::get('/reports/suppliers', [ReportController::class, 'suppliers'])->name('reports.suppliers');
-
-    // Эти разделы доступны всем авторизованным (employee, manager, admin)
-    Route::resource('suppliers', SupplierController::class)->except(['create', 'store', 'edit', 'update', 'destroy']);
-    Route::resource('contracts', \App\Http\Controllers\ContractController::class)->except(['create', 'store', 'edit', 'update', 'destroy']);
-    Route::resource('purchase-requests', PurchaseRequestController::class)->except(['approve', 'reject', 'archive', 'unarchive']);
-    Route::resource('orders', OrderController::class)->except(['archive', 'unarchive', 'updateStatus']);
-
-    // Просмотр поставщиков — для всех авторизованных
-    Route::get('suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
-    Route::get('suppliers/{supplier}', [SupplierController::class, 'show'])->name('suppliers.show');
-
-    // Просмотр контрактов — для всех авторизованных
-    Route::get('contracts', [\App\Http\Controllers\ContractController::class, 'index'])->name('contracts.index');
-    Route::get('contracts/{contract}', [\App\Http\Controllers\ContractController::class, 'show'])->name('contracts.show');
-
+    // Общие маршруты для уведомлений
     Route::middleware(['auth'])->group(function () {
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::post('/notifications/read/{id}', [NotificationController::class, 'read'])->name('notifications.read');

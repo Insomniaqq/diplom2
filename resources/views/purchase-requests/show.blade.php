@@ -16,7 +16,7 @@
                 <div class="mb-2"><b>Заявитель:</b> {{ $request->requester->name }}</div>
                 <div class="mb-2"><b>Дата создания:</b> {{ $request->created_at->format('d.m.Y H:i') }}</div>
 
-                @if(Auth::user()->hasRole('admin'))
+                @if(Auth::user()->role === 'Manager' || Auth::user()->role === 'Admin')
                     <div class="flex gap-2 mt-4">
                         @if($request->status === 'pending')
                             <form action="{{ route('purchase-requests.approve', $request) }}" method="POST">

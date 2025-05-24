@@ -14,12 +14,14 @@
                 <a href="{{ route('roles.index') }}" class="btn btn-primary"><i class="fa-solid fa-user-shield"></i> Роли</a>
                 <a href="{{ route('users.index') }}" class="btn btn-primary"><i class="fa-solid fa-users"></i> Пользователи</a>
                 <a href="{{ route('users.create') }}" class="btn btn-success"><i class="fa-solid fa-user-plus"></i> Добавить пользователя</a>
+                <a href="{{ route('settings.index') }}" class="btn btn-secondary"><i class="fa-solid fa-gear"></i> Настройки</a>
                 <div class="dropdown" style="display:inline-block;position:relative;">
                     <a href="#" class="btn btn-primary dropdown-toggle"><i class="fa-solid fa-chart-line"></i> Аналитика <i class="fa fa-caret-down"></i></a>
                     <div class="dropdown-menu" style="display:none;position:absolute;left:0;top:100%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.1);z-index:1000;min-width:180px;">
                         <a href="{{ route('reports.budget') }}" class="dropdown-item" style="display:block;padding:8px 16px;">Бюджет</a>
                         <a href="{{ route('reports.requests') }}" class="dropdown-item" style="display:block;padding:8px 16px;">Заявки</a>
                         <a href="{{ route('reports.suppliers') }}" class="dropdown-item" style="display:block;padding:8px 16px;">Поставщики</a>
+                        <a href="{{ route('reports.monthly-norms') }}" class="dropdown-item" style="display:block;padding:8px 16px;">Месячные нормы</a>
                     </div>
                 </div>
             </div>

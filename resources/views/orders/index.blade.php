@@ -27,6 +27,7 @@
                     <th>Поставщик</th>
                     <th>Сумма</th>
                     <th>{{ __('messages.dashboard_table_status') }}</th>
+                    <th>Дата создания</th>
                     <th>Ожидаемая дата</th>
                     <th>Создал</th>
                     <th>Действия</th>
@@ -43,37 +44,39 @@
                             {{ __('messages.status_' . $order->status) }}
                         </span>
                     </td>
-                    <td>{{ $order->expected_delivery_date->format('d.m.Y') }}</td>
+                    <td>{{ $order->created_at->setTimezone('Europe/Moscow')->format('d.m.Y H:i') }}</td>
+                    <td>{{ $order->expected_delivery_date->setTimezone('Europe/Moscow')->format('d.m.Y H:i') }}</td>
                     <td>{{ $order->creator->name }}</td>
                     <td>
-                        @if($order->status === 'pending')
-                            <form action="{{ route('orders.update-status', $order) }}" method="POST" style="display: inline;">
+                        <div class="flex gap-2 items-center">
+                            @if($order->status === 'pending')
+                                <form action="{{ route('orders.update-status', $order) }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="status" value="confirmed">
+                                    <button type="submit" class="btn btn-primary btn-sm">Подтвердить</button>
+                                </form>
+                                <form action="{{ route('orders.update-status', $order) }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="status" value="cancelled">
+                                    <button type="submit" class="btn btn-danger btn-sm">Отменить</button>
+                                </form>
+                            @elseif($order->status === 'confirmed')
+                                <form action="{{ route('orders.update-status', $order) }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="status" value="shipped">
+                                    <button type="submit" class="btn btn-primary btn-sm">Отметить как отправленный</button>
+                                </form>
+                            @elseif($order->status === 'shipped')
+                                <form action="{{ route('orders.update-status', $order) }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="status" value="delivered">
+                                    <button type="submit" class="btn btn-primary btn-sm">Отметить как полученный</button>
+                                </form>
+                            @endif
+                            {{-- Кнопка архивации --}}
+                            <form action="{{ route('orders.archive', $order) }}" method="POST">
                                 @csrf
-                                <input type="hidden" name="status" value="confirmed">
-                                <button type="submit" class="btn btn-primary">Подтвердить</button>
-                            </form>
-                            <form action="{{ route('orders.update-status', $order) }}" method="POST" style="display: inline;">
-                                @csrf
-                                <input type="hidden" name="status" value="cancelled">
-                                <button type="submit" class="btn btn-danger">Отменить</button>
-                            </form>
-                        @elseif($order->status === 'confirmed')
-                            <form action="{{ route('orders.update-status', $order) }}" method="POST" style="display: inline;">
-                                @csrf
-                                <input type="hidden" name="status" value="shipped">
-                                <button type="submit" class="btn btn-primary">Отметить как отправленный</button>
-                            </form>
-                        @elseif($order->status === 'shipped')
-                            <form action="{{ route('orders.update-status', $order) }}" method="POST" style="display: inline;">
-                                @csrf
-                                <input type="hidden" name="status" value="delivered">
-                                <button type="submit" class="btn btn-primary">Отметить как полученный</button>
-                            </form>
-                        @endif
-                        <div class="flex gap-2">
-                            <form action="{{ route('orders.archive', $order) }}" method="POST" class="inline">
-                                @csrf
-                                <button type="submit" class="btn btn-sm btn-secondary">
+                                <button type="submit" class="btn btn-sm btn-secondary" @if($order->status === 'archived') disabled @endif>
                                     <i class="fa-solid fa-box-archive"></i> В архив
                                 </button>
                             </form>

@@ -9,9 +9,14 @@ class RoleController extends Controller
 {
     public function index()
     {
-        $roles = Role::with(['users'])->get();
+        $roles = Role::all();
+        $userCounts = [];
+        foreach ($roles as $role) {
+            $userCounts[$role->id] = \App\Models\User::where('role', $role->name)->count();
+        }
         return view('roles.index', [
-            'roles' => $roles
+            'roles' => $roles,
+            'userCounts' => $userCounts,
         ]);
     }
 

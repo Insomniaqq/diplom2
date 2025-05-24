@@ -19,7 +19,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $query = User::query();
-        $roles = ['admin', 'manager', 'employee'];
+        $roles = ['Admin', 'Manager', 'Employee'];
         $filters = [
             'role' => $request->input('role'),
             'email' => $request->input('email'),
@@ -56,7 +56,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        $roles = ['admin', 'manager', 'employee'];
+        $roles = ['Admin', 'Manager', 'Employee'];
         return view('users.create', compact('roles'));
     }
 
@@ -72,7 +72,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
-            'role' => 'required|in:admin,manager,employee',
+            'role' => 'required|in:Admin,Manager,Employee',
         ]);
         $validated['password'] = bcrypt($validated['password']);
         $user = \App\Models\User::create($validated);

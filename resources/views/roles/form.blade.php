@@ -1,8 +1,12 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ isset($role) ? 'Редактировать роль' : 'Добавить роль' }}
+        </h2>
+    </x-slot>
 
-@section('content')
 <div class="container">
-    <h1 class="mb-4">{{ isset($role) ? 'Редактировать роль' : 'Добавить роль' }}</h1>
+    
     <form method="POST" action="{{ isset($role) ? route('roles.update', $role) : route('roles.store') }}">
         @csrf
         @if(isset($role))
@@ -20,4 +24,4 @@
         <a href="{{ route('roles.index') }}" class="btn btn-secondary">Отмена</a>
     </form>
 </div>
-@endsection 
+</x-app-layout> 

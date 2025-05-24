@@ -17,13 +17,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         .dropdown-anim {
-            opacity: 0;
+            display: none;
+            /* opacity: 0; */
             transform: translateY(-10px);
             pointer-events: none;
             transition: opacity 0.22s cubic-bezier(.4,0,.2,1), transform 0.22s cubic-bezier(.4,0,.2,1);
         }
         .dropdown-anim--visible {
-            opacity: 1;
+            display: block;
+            /* opacity: 1; */
             transform: translateY(0);
             pointer-events: auto;
         }
@@ -57,10 +59,18 @@
     <nav class="navbar">
         <div class="navbar-content">
             <div class="navbar-links">
-                <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}"><i class="fa-solid fa-house" style="margin-right:8px;"></i>Главная</a>
-                @if(Auth::user()->role === 'admin')
-                    <a href="{{ route('materials.index') }}" class="{{ request()->routeIs('materials.*') ? 'active' : '' }}"><i class="fa-solid fa-boxes-stacked" style="margin-right:8px;"></i>Материалы</a>
-                    <a href="{{ route('suppliers.index') }}" class="{{ request()->routeIs('suppliers.*') ? 'active' : '' }}"><i class="fa-solid fa-truck-field" style="margin-right:8px;"></i>Поставщики</a>
+                <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                    <i class="fa-solid fa-house" style="margin-right:8px;"></i>Главная
+                </a>
+                
+                @if(Auth::user()->role === 'Admin')
+                    {{-- Администратор видит все пункты меню --}}
+                    <a href="{{ route('materials.index') }}" class="{{ request()->routeIs('materials.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-boxes-stacked" style="margin-right:8px;"></i>Материалы
+                    </a>
+                    <a href="{{ route('suppliers.index') }}" class="{{ request()->routeIs('suppliers.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-truck-field" style="margin-right:8px;"></i>Поставщики
+                    </a>
                     <a href="{{ route('contracts.index') }}" class="{{ request()->routeIs('contracts.*') ? 'active' : '' }}">
                         <i class="fa-solid fa-file-contract" style="margin-right:8px;"></i>Контракты
                     </a>
@@ -71,17 +81,30 @@
                         <div class="dropdown-menu" style="display:none;position:absolute;background:#2563eb;box-shadow:0 2px 8px rgba(0,0,0,0.1);z-index:1000;">
                             <a href="{{ route('reports.budget') }}" class="dropdown-item">Бюджет</a>
                             <a href="{{ route('reports.requests') }}" class="dropdown-item">Заявки</a>
+                            <a href="{{ route('reports.monthly-norms') }}" class="dropdown-item">Месячные нормы</a>
                             <a href="{{ route('reports.suppliers') }}" class="dropdown-item">Поставщики</a>
                         </div>
                     </div>
-                    <a href="{{ route('purchase-requests.index') }}" class="{{ request()->routeIs('purchase-requests.*') ? 'active' : '' }}"><i class="fa-solid fa-file-signature" style="margin-right:8px;"></i>Заявки на закупку</a>
-                    <a href="{{ route('orders.index') }}" class="{{ request()->routeIs('orders.*') ? 'active' : '' }}"><i class="fa-solid fa-file-invoice-dollar" style="margin-right:8px;"></i>Заказы</a>
-                    <a href="{{ route('help') }}" class="{{ request()->routeIs('help') ? 'active' : '' }}"><i class="fa-solid fa-circle-question" style="margin-right:8px;"></i>Помощь</a>
-                    @if(Auth::check() && Auth::user()->hasRole('admin'))
-                        <a href="{{ route('admin.panel') }}" class="{{ request()->routeIs('admin.panel') ? 'active' : '' }}"><i class="fa-solid fa-gears" style="margin-right:8px;"></i>Админ-панель</a>
-                    @endif
-                @elseif(Auth::user()->role === 'employee')
-                    <a href="{{ route('suppliers.index') }}" class="{{ request()->routeIs('suppliers.*') ? 'active' : '' }}"><i class="fa-solid fa-truck-field" style="margin-right:8px;"></i>Поставщики</a>
+                    <a href="{{ route('purchase-requests.index') }}" class="{{ request()->routeIs('purchase-requests.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-file-signature" style="margin-right:8px;"></i>Заявки на закупку
+                    </a>
+                    <a href="{{ route('orders.index') }}" class="{{ request()->routeIs('orders.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-file-invoice-dollar" style="margin-right:8px;"></i>Заказы
+                    </a>
+                    <a href="{{ route('help') }}" class="{{ request()->routeIs('help') ? 'active' : '' }}">
+                        <i class="fa-solid fa-circle-question" style="margin-right:8px;"></i>Помощь
+                    </a>
+                    <a href="{{ route('admin.panel') }}" class="{{ request()->routeIs('admin.panel') ? 'active' : '' }}">
+                        <i class="fa-solid fa-gears" style="margin-right:8px;"></i>Админ-панель
+                    </a>
+                @elseif(Auth::user()->role === 'Manager')
+                    {{-- Заведующий складом видит все кроме админ-панели --}}
+                    <a href="{{ route('materials.index') }}" class="{{ request()->routeIs('materials.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-boxes-stacked" style="margin-right:8px;"></i>Материалы
+                    </a>
+                    <a href="{{ route('suppliers.index') }}" class="{{ request()->routeIs('suppliers.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-truck-field" style="margin-right:8px;"></i>Поставщики
+                    </a>
                     <a href="{{ route('contracts.index') }}" class="{{ request()->routeIs('contracts.*') ? 'active' : '' }}">
                         <i class="fa-solid fa-file-contract" style="margin-right:8px;"></i>Контракты
                     </a>
@@ -92,12 +115,30 @@
                         <div class="dropdown-menu" style="display:none;position:absolute;background:#2563eb;box-shadow:0 2px 8px rgba(0,0,0,0.1);z-index:1000;">
                             <a href="{{ route('reports.budget') }}" class="dropdown-item">Бюджет</a>
                             <a href="{{ route('reports.requests') }}" class="dropdown-item">Заявки</a>
+                            <a href="{{ route('reports.monthly-norms') }}" class="dropdown-item">Месячные нормы</a>
                             <a href="{{ route('reports.suppliers') }}" class="dropdown-item">Поставщики</a>
                         </div>
                     </div>
-                    <a href="{{ route('purchase-requests.index') }}" class="{{ request()->routeIs('purchase-requests.*') ? 'active' : '' }}"><i class="fa-solid fa-file-signature" style="margin-right:8px;"></i>Заявки на закупку</a>
-                    <a href="{{ route('orders.index') }}" class="{{ request()->routeIs('orders.*') ? 'active' : '' }}"><i class="fa-solid fa-file-invoice-dollar" style="margin-right:8px;"></i>Заказы</a>
-                    <a href="{{ route('help') }}" class="{{ request()->routeIs('help') ? 'active' : '' }}"><i class="fa-solid fa-circle-question" style="margin-right:8px;"></i>Помощь</a>
+                    <a href="{{ route('purchase-requests.index') }}" class="{{ request()->routeIs('purchase-requests.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-file-signature" style="margin-right:8px;"></i>Заявки на закупку
+                    </a>
+                    <a href="{{ route('orders.index') }}" class="{{ request()->routeIs('orders.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-file-invoice-dollar" style="margin-right:8px;"></i>Заказы
+                    </a>
+                    <a href="{{ route('help') }}" class="{{ request()->routeIs('help') ? 'active' : '' }}">
+                        <i class="fa-solid fa-circle-question" style="margin-right:8px;"></i>Помощь
+                    </a>
+                @else
+                    {{-- Обычный работник склада видит только основные пункты --}}
+                    <a href="{{ route('materials.index') }}" class="{{ request()->routeIs('materials.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-boxes-stacked" style="margin-right:8px;"></i>Материалы
+                    </a>
+                    <a href="{{ route('purchase-requests.index') }}" class="{{ request()->routeIs('purchase-requests.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-file-signature" style="margin-right:8px;"></i>Заявки на закупку
+                    </a>
+                    <a href="{{ route('help') }}" class="{{ request()->routeIs('help') ? 'active' : '' }}">
+                        <i class="fa-solid fa-circle-question" style="margin-right:8px;"></i>Помощь
+                    </a>
                 @endif
             </div>
             <div class="user-dropdown">

@@ -40,7 +40,7 @@
                                     <td class="px-4 py-2">{{ $contract->date_start }}</td>
                                     <td class="px-4 py-2">{{ $contract->date_end ?? '-' }}</td>
                                     <td class="px-4 py-2">{{ number_format($contract->amount, 2) }} ₽</td>
-                                    <td class="px-4 py-2">{{ $contract->status }}</td>
+                                    <td class="px-4 py-2"><span class="status-badge status-{{ $contract->status }}">@if($contract->status == 'active') Активный @elseif($contract->status == 'closed') Закрыт @elseif($contract->status == 'cancelled') Отменен @else {{ $contract->status }} @endif</span></td>
                                     <td class="px-4 py-2">
                                         <a href="{{ route('contracts.show', $contract->id) }}" class="btn btn-sm btn-info">Просмотр</a>
                                     </td>
@@ -71,7 +71,7 @@
                                 <tr>
                                     <td class="px-4 py-2">{{ $order->order_number }}</td>
                                     <td class="px-4 py-2">{{ number_format($order->total_amount, 2) }} ₽</td>
-                                    <td class="px-4 py-2">{{ $order->status }}</td>
+                                    <td class="px-4 py-2"><span class="status-badge status-{{ $order->status }}">@if($order->status == 'delivered') Доставлено @else {{ $order->status }} @endif</span></td>
                                     <td class="px-4 py-2">{{ $order->expected_delivery_date ? $order->expected_delivery_date->format('d.m.Y') : '-' }}</td>
                                     <td class="px-4 py-2">
                                         <a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-info">Просмотр</a>

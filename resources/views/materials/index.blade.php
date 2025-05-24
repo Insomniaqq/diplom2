@@ -5,9 +5,12 @@
         </h2>
     </x-slot>
 
-    <div style="margin-top: 1.2rem; margin-bottom: 1.2rem; display: flex; justify-content: flex-start; align-items: center;">
+    <div style="margin-top: 1.2rem; margin-bottom: 1.2rem; display: flex; justify-content: flex-start; align-items: center; gap: 1rem;">
         <a href="{{ route('materials.create') }}" class="btn btn-primary">
             Добавить материал
+        </a>
+        <a href="{{ route('departments.index') }}" class="btn btn-secondary">
+            Управление разделами
         </a>
     </div>
 
@@ -31,18 +34,37 @@
             </thead>
             <tbody>
                 @foreach($materials as $material)
-                <tr>
+                @php
+                    $rowClass = '';
+                    if ($material->current_quantity <= $material->min_quantity) {
+                        $rowClass = 'bg-red-200'; // Ниже порога - красный фон
+                    } elseif ($material->current_quantity <= $material->min_quantity * 1.2) {
+                        $rowClass = 'bg-yellow-200'; // Желательно заказать - желтый фон
+                    }
+                @endphp
+                <tr class="{{ $rowClass }}">
                     <td>{{ $material->code }}</td>
                     <td>{{ $material->name }}</td>
                     <td>{{ $material->unit_of_measure }}</td>
                     <td>{{ $material->min_quantity }}</td>
                     <td>
-                        <span class="status-badge {{ $material->current_quantity <= $material->min_quantity ? 'status-rejected' : 'status-approved' }}">
+                        @php
+                            $bgColor = '';
+                            if ($material->current_quantity >= 100) {
+                                $bgColor = '#34D399'; // Более яркий зеленый для >= 100
+                            } elseif ($material->current_quantity >= 30 && $material->current_quantity <= 60) {
+                                $bgColor = '#F59E0B'; // Более яркий оранжевый для 30-60
+                            } elseif ($material->current_quantity < 30) {
+                                $bgColor = '#EF4444'; // Более яркий красный для < 30
+                            }
+                        @endphp
+                        <span style="background-color: {{ $bgColor }}; padding: 0.25rem 0.5rem; border-radius: 9999px; display: inline-block; color: #ffffff;">
                             {{ $material->current_quantity }}
                         </span>
                     </td>
                     <td>
                         <a href="{{ route('materials.edit', $material) }}" class="btn btn-primary" style="margin-right: 0.5rem;">Редактировать</a>
+                        <a href="{{ route('materials.show', $material) }}" class="btn btn-info" style="margin-right: 0.5rem;">Просмотр</a>
                         <form action="{{ route('materials.destroy', $material) }}" method="POST" style="display: inline;">
                             @csrf
                             @method('DELETE')

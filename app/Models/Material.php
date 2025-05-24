@@ -29,4 +29,14 @@ class Material extends Model
     {
         return $this->hasMany(PurchaseRequest::class);
     }
+
+    public function distributions()
+    {
+        return $this->hasMany(MaterialDistribution::class);
+    }
+
+    public function departments()
+    {
+        return $this->belongsToMany(Department::class)->withPivot('monthly_quantity')->withTimestamps();
+    }
 }

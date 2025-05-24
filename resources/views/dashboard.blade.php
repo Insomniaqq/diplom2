@@ -66,8 +66,8 @@
                             <td>{{ $request->material->name }}</td>
                             <td>{{ $request->quantity }}</td>
                             <td>
-                                <span class="dashboard-status dashboard-status-{{ $request->status }}">
-                                    @if($request->status == 'pending') Ожидание @elseif($request->status == 'approved') Утверждена @elseif($request->status == 'rejected') Отклонена @elseif($request->status == 'archived') Архив @else {{ $request->status }} @endif
+                                <span class="status-badge status-{{ $request->status }}">
+                                    @if($request->status == 'pending') Ожидание @elseif($request->status == 'approved') Утверждена @elseif($request->status == 'rejected') Отклонена @elseif($request->status == 'archived') Архив @elseif($request->status == 'completed') Завершено @else {{ $request->status }} @endif
                                 </span>
                             </td>
                             <td>{{ $request->created_at->format('d.m.Y H:i') }}</td>
@@ -78,10 +78,13 @@
             </div>
         </div>
 
-        <div class="dashboard-chart-block" style="background:#fff; border-radius:1.2rem; box-shadow:0 2px 12px rgba(21,101,192,0.07); padding:2rem 1.5rem; margin-bottom:2.5rem; max-width:900px; margin-left:auto; margin-right:auto;">
-            <h3 class="dashboard-table-title" style="margin-bottom:1.5rem;">График активности</h3>
-            <canvas id="dashboardChart" height="260"></canvas>
-        </div>
+        @if(Auth::user()->role === 'Admin' || Auth::user()->role === 'Manager')
+            <div class="dashboard-chart-block" style="background:#fff; border-radius:1.2rem; box-shadow:0 2px 12px rgba(21,101,192,0.07); padding:2rem 1.5rem; margin-top:2.5rem; max-width:600px;">
+                <h3 class="dashboard-table-title" style="margin-bottom:1.5rem;">График активности</h3>
+                <canvas id="dashboardChart" height="260"></canvas>
+            </div>
+        @endif
+
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
