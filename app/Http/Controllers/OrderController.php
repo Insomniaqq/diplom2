@@ -10,6 +10,7 @@ use App\Notifications\SystemEventNotification;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderShippedToSupplier;
+use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
@@ -48,7 +49,7 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $rules = [
             'supplier_id' => 'required|exists:suppliers,id',
             'expected_delivery_date' => 'required|date|after:today',
             'payment_terms' => 'required|string|max:1000',
@@ -56,7 +57,34 @@ class OrderController extends Controller
             'notes' => 'nullable|string|max:1000',
             'purchase_request_id' => 'required|exists:purchase_requests,id',
             'unit_price' => 'required|numeric|min:0.01',
-        ]);
+        ];
+
+        $messages = [
+            'required' => 'Поле :attribute обязательно для заполнения.',
+            'exists' => 'Выбранное значение для поля :attribute не существует.',
+            'date' => 'Поле :attribute должно быть действительной датой.',
+            'after' => 'Поле :attribute должно быть датой после сегодняшней.',
+            'string' => 'Поле :attribute должно быть строкой.',
+            'max' => 'Поле :attribute не должно превышать :max символов.',
+            'numeric' => 'Поле :attribute должно быть числом.',
+            'min' => 'Поле :attribute должно быть не менее :min.',
+            'expected_delivery_date.after' => 'Ожидаемая дата поставки должна быть в будущем.',
+            'unit_price.min' => 'Цена за единицу должна быть не менее :min.',
+        ];
+
+        $attributes = [
+            'supplier_id' => 'Поставщик',
+            'expected_delivery_date' => 'Ожидаемая дата поставки',
+            'payment_terms' => 'Условия оплаты',
+            'shipping_address' => 'Адрес доставки',
+            'notes' => 'Примечания',
+            'purchase_request_id' => 'Заявка на закупку',
+            'unit_price' => 'Цена за единицу',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages, $attributes);
+
+        $validated = $validator->validate();
 
         $purchaseRequest = \App\Models\PurchaseRequest::findOrFail($validated['purchase_request_id']);
         $quantity = $purchaseRequest->quantity;
