@@ -290,6 +290,11 @@ class PurchaseRequestController extends Controller
 
     public function archived()
     {
+        // Добавляем явную проверку роли
+        if (!auth()->user() || !auth()->user()->hasRole('Employee')) {
+            abort(404); // Возвращаем 404, если у пользователя нет роли Employee
+        }
+
         $requests = PurchaseRequest::with(['material', 'requester'])
             ->archived()
             ->latest()

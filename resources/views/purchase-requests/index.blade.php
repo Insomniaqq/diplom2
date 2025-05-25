@@ -7,6 +7,20 @@
                     <i class="fa-solid fa-plus"></i> Новая заявка
                 </a>
             </div>
+            <!-- Поисковая строка -->
+            <form action="{{ route('purchase-requests.index') }}" method="GET" class="mb-4">
+                <div class="flex items-center gap-2">
+                    <input type="text" name="search" placeholder="Поиск по заявкам..." value="{{ request('search') }}" class="form-input w-full">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-search"></i> Искать
+                    </button>
+                    @if(request('search'))
+                        <a href="{{ route('purchase-requests.index') }}" class="btn btn-secondary">
+                            Сбросить
+                        </a>
+                    @endif
+                </div>
+            </form>
         </div>
     </x-slot>
 

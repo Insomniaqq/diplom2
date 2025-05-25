@@ -10,6 +10,19 @@
                     <i class="fa-solid fa-plus"></i> Новый заказ
                 </a>
             </div>
+            <form action="{{ route('orders.index') }}" method="GET" class="mb-4">
+                <div class="flex items-center gap-2">
+                    <input type="text" name="search" placeholder="Поиск по заказам..." value="{{ request('search') }}" class="form-input w-full">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-search"></i> Искать
+                    </button>
+                    @if(request('search'))
+                        <a href="{{ route('orders.index') }}" class="btn btn-secondary">
+                            Сбросить
+                        </a>
+                    @endif
+                </div>
+            </form>
         </div>
     </x-slot>
 

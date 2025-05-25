@@ -25,6 +25,7 @@
                                 <th>Количество</th>
                                 <th>{{ __('messages.dashboard_table_status') }}</th>
                                 <th>Заявитель</th>
+                                <th>Дата создания</th>
                                 <th>Дата архивации</th>
                                 <th>Действия</th>
                             </tr>
@@ -41,14 +42,17 @@
                                         </span>
                                     </td>
                                     <td>{{ $request->requester->name }}</td>
+                                    <td>{{ $request->created_at->setTimezone('Europe/Moscow')->format('d.m.Y H:i') }}</td>
                                     <td>{{ $request->archived_at->setTimezone('Europe/Moscow')->format('d.m.Y H:i') }}</td>
                                     <td>
-                                        <form action="{{ route('purchase-requests.unarchive', $request) }}" method="POST" class="inline">
-                                            @csrf
-                                            <button type="submit" class="btn btn-sm btn-secondary">
-                                                <i class="fa-solid fa-box-open"></i> Разархивировать
-                                            </button>
-                                        </form>
+                                        <div class="flex gap-2">
+                                            <form action="{{ route('purchase-requests.unarchive', $request) }}" method="POST" class="inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-secondary">
+                                                    <i class="fa-solid fa-box-open"></i> Разархивировать
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
