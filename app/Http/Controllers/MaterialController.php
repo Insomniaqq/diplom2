@@ -99,15 +99,20 @@ class MaterialController extends Controller
         $material->current_quantity -= $validated['quantity'];
         $material->save();
 
-        // Check material quantity after distribution and send notification if in warning range
-        if ($material->current_quantity >= 30 && $material->current_quantity <= 60) {
-            // Find users with 'manager' role (adjust roles as needed)
-            $usersToNotify = \App\Models\User::where('role', 'Manager')->get();
+        // Check material quantity after distribution and send notification if in low stock or zero
+        if ($material->current_quantity > 0 && $material->current_quantity <= 50) {
+            // Find all users to notify
+            $usersToNotify = \App\Models\User::all();
 
             foreach ($usersToNotify as $user) {
-                // Using the existing MonthlyNormExceededNotification, but the message will indicate low stock
-                // You might consider creating a new notification class for low stock specifically if needed.
-                $user->notify(new \App\Notifications\MonthlyNormExceededNotification($material, null, $material->current_quantity)); // Pass quantity instead of percentage
+                $user->notify(new \App\Notifications\LowMaterialStockNotification($material, $material->current_quantity));
+            }
+        } elseif ($material->current_quantity <= 0) {
+             // Find all users to notify for zero stock
+            $usersToNotify = \App\Models\User::all();
+
+            foreach ($usersToNotify as $user) {
+                $user->notify(new \App\Notifications\LowMaterialStockNotification($material, 0)); // Pass 0 for zero stock
             }
         }
 

@@ -63,13 +63,17 @@
                         </span>
                     </td>
                     <td>
-                        <a href="{{ route('materials.edit', $material) }}" class="btn btn-primary" style="margin-right: 0.5rem;">Редактировать</a>
-                        <a href="{{ route('materials.show', $material) }}" class="btn btn-info" style="margin-right: 0.5rem;">Просмотр</a>
-                        <form action="{{ route('materials.destroy', $material) }}" method="POST" style="display: inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Вы уверены?')">Удалить</button>
-                        </form>
+                        @if(auth()->check() && (auth()->user()->role === 'Admin' || auth()->user()->role === 'Manager'))
+                            <a href="{{ route('materials.edit', $material) }}" class="btn btn-primary" style="margin-right: 0.5rem;">Редактировать</a>
+                            <a href="{{ route('materials.show', $material) }}" class="btn btn-info" style="margin-right: 0.5rem;">Просмотр</a>
+                            <form action="{{ route('materials.destroy', $material) }}" method="POST" style="display: inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Вы уверены?')">Удалить</button>
+                            </form>
+                        @else
+                             <a href="{{ route('materials.show', $material) }}" class="btn btn-info" style="margin-right: 0.5rem;">Просмотр</a>
+                        @endif
                     </td>
                 </tr>
                 @endforeach
