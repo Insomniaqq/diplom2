@@ -14,9 +14,20 @@ class MaterialController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $materials = Material::latest()->paginate(10);
+        $query = Material::query();
+
+        if ($request->has('name')) {
+            $query->where('name', 'like', '%' . $request->input('name') . '%');
+        }
+
+        if ($request->has('code')) {
+            $query->where('code', 'like', '%' . $request->input('code') . '%');
+        }
+
+        $materials = $query->latest()->paginate(6)->appends($request->query());
+
         return view('materials.index', compact('materials'));
     }
 

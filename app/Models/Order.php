@@ -21,6 +21,8 @@ class Order extends Model
         'created_by',
         'is_archived',
         'archived_at',
+        'payment_terms',
+        'shipping_address',
     ];
 
     protected $casts = [

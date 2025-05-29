@@ -14,6 +14,26 @@
         </a>
     </div>
 
+    {{-- Filter Form --}}
+    <form method="GET" action="{{ route('materials.index') }}" class="mb-4 flex items-center gap-4">
+        <div>
+            <label for="name" class="form-label sr-only">Название</label>
+            <input type="text" name="name" id="name" placeholder="Фильтр по названию" value="{{ request('name') }}" class="form-input w-32">
+        </div>
+        <div>
+            <label for="code" class="form-label sr-only">Код</label>
+            <input type="text" name="code" id="code" placeholder="Фильтр по коду" value="{{ request('code') }}" class="form-input w-32">
+        </div>
+        <div>
+            <button type="submit" class="btn btn-primary">Фильтровать</button>
+        </div>
+        @if(request('name') || request('code'))
+            <div>
+                <a href="{{ route('materials.index') }}" class="btn btn-secondary">Сбросить</a>
+            </div>
+        @endif
+    </form>
+
     @if(session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -81,7 +101,54 @@
         </table>
     </div>
 
-    <div style="margin-top: 1rem;">
-        {{ $materials->links() }}
+    <div class="d-flex justify-content-center">
+        @if ($materials->hasPages())
+            <nav>
+                <ul class="pagination" style="display: flex; gap: 0.3rem; list-style: none; padding: 0; align-items: center;">
+                    {{-- Previous Page Link --}}
+                    @if ($materials->onFirstPage())
+                        <li class="page-item disabled" aria-disabled="true" aria-label="Назад">
+                            <span class="page-link" aria-hidden="true" style="background: none; color: #a1a1aa; border: none; font-size: 1.5em; padding: 0 0.7em;">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </span>
+                        </li>
+                    @else
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $materials->previousPageUrl() }}" rel="prev" aria-label="Назад" style="background: none; color: #2563eb; border: none; font-size: 1.5em; padding: 0 0.7em; text-decoration: none;">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </a>
+                        </li>
+                    @endif
+
+                    {{-- Pagination Elements --}}
+                    @foreach ($materials->getUrlRange(1, $materials->lastPage()) as $page => $url)
+                        @if ($page == $materials->currentPage())
+                            <li class="page-item active" aria-current="page">
+                                <span class="page-link" style="background: none; color: #2563eb; font-weight: bold; border-bottom: 2px solid #2563eb; border-radius: 0; padding: 0 0.7em;">{{ $page }}</span>
+                            </li>
+                        @else
+                            <li class="page-item">
+                                <a class="page-link" href="{{ $url }}" style="background: none; color: #2563eb; border: none; padding: 0 0.7em; text-decoration: none;">{{ $page }}</a>
+                            </li>
+                        @endif
+                    @endforeach
+
+                    {{-- Next Page Link --}}
+                    @if ($materials->hasMorePages())
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $materials->nextPageUrl() }}" rel="next" aria-label="Вперёд" style="background: none; color: #2563eb; border: none; font-size: 1.5em; padding: 0 0.7em; text-decoration: none;">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    @else
+                        <li class="page-item disabled" aria-disabled="true" aria-label="Вперёд">
+                            <span class="page-link" aria-hidden="true" style="background: none; color: #a1a1aa; border: none; font-size: 1.5em; padding: 0 0.7em;">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </span>
+                        </li>
+                    @endif
+                </ul>
+            </nav>
+        @endif
     </div>
 </x-app-layout> 

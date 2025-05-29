@@ -14,9 +14,24 @@ class SupplierController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $suppliers = Supplier::latest()->paginate(10);
+        $query = Supplier::query();
+
+        if ($request->has('inn')) {
+            $query->where('inn', 'like', '%' . $request->input('inn') . '%');
+        }
+
+        if ($request->has('name')) {
+            $query->where('name', 'like', '%' . $request->input('name') . '%');
+        }
+
+        if ($request->has('contact_person')) {
+            $query->where('contact_person', 'like', '%' . $request->input('contact_person') . '%');
+        }
+
+        $suppliers = $query->latest()->paginate(10)->appends($request->query());
+
         return view('suppliers.index', compact('suppliers'));
     }
 

@@ -10,6 +10,7 @@ return [
     'status_delivered' => 'Доставлен',
     'status_archived' => 'В архиве',
     'status_unarchived' => 'В работе',
+    'status_cancelled' => 'Отменён',
     'pagination' => [
         'previous' => 'Назад',
         'next' => 'Вперёд',

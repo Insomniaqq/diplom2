@@ -79,8 +79,6 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::get('/reports/requests', [ReportController::class, 'requests'])->name('reports.requests');
         Route::get('/reports/suppliers', [ReportController::class, 'suppliers'])->name('reports.suppliers');
         
-        Route::get('orders/archived', [OrderController::class, 'archived'])->name('orders.archived');
-        
         Route::get('departments/{department}/norms', [ReportController::class, 'monthlyNorms'])->name('departments.norms');
         
         Route::post('purchase-requests/{purchaseRequest}/approve', [PurchaseRequestController::class, 'approve'])->name('purchase-requests.approve');
@@ -116,4 +114,16 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::post('/notifications/read/{id}', [NotificationController::class, 'read'])->name('notifications.read');
         Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.readAll');
     });
+
+    // Add the archived orders route here with role:Admin|Manager middleware
+    Route::middleware(['auth:sanctum', 'auth', 'role:Admin|Manager'])->group(function () {
+        Route::get('orders/archived', [OrderController::class, 'archived'])->name('orders.archived');
+        Route::post('purchase-requests/{purchaseRequest}/complete', [PurchaseRequestController::class, 'complete'])->name('purchase-requests.complete');
+    });
 });
+
+// Temporarily move the archived orders route outside of all middleware groups for debugging
+// Route::get('orders/archived', [OrderController::class, 'archived'])->name('orders.archived.debug'); // Removed temporary route
+
+// Move the archived orders route here without any middleware for debugging
+Route::get('orders/archived', [OrderController::class, 'archived'])->name('orders.archived');

@@ -13,6 +13,30 @@
         </div>
     @endif
 
+    {{-- Filter Form --}}
+    <form method="GET" action="{{ route('suppliers.index') }}" class="mb-4 flex items-center gap-4">
+        <div>
+            <label for="inn" class="form-label sr-only">ИНН</label>
+            <input type="text" name="inn" id="inn" placeholder="Фильтр по ИНН" value="{{ request('inn') }}" class="form-input w-32">
+        </div>
+        <div>
+            <label for="name" class="form-label sr-only">Наименование</label>
+            <input type="text" name="name" id="name" placeholder="Фильтр по названию" value="{{ request('name') }}" class="form-input w-32">
+        </div>
+        <div>
+            <label for="contact_person" class="form-label sr-only">Контактное лицо</label>
+            <input type="text" name="contact_person" id="contact_person" placeholder="Фильтр по контактному лицу" value="{{ request('contact_person') }}" class="form-input w-32">
+        </div>
+        <div>
+            <button type="submit" class="btn btn-primary">Фильтровать</button>
+        </div>
+        @if(request('inn') || request('name') || request('contact_person'))
+            <div>
+                <a href="{{ route('suppliers.index') }}" class="btn btn-secondary">Сбросить</a>
+            </div>
+        @endif
+    </form>
+
     @if(session('success'))
         <div class="alert alert-success">
             {{ session('success') }}

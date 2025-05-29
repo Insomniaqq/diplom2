@@ -10,7 +10,7 @@
 
     <div class="main-content">
         <div class="card">
-            <p>Всего архивированных заказов: {{ $orders->total() }}</p>
+            <p>Всего архивированных заказов: {{ $orders->count() }}</p>
             @if($orders->count() === 0)
                 <div class="text-center py-8 text-gray-500">
                     <i class="fa-solid fa-box-archive text-4xl mb-4"></i>
@@ -58,9 +58,9 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-4">
+                {{-- <div class="mt-4">
                     {{ $orders->links() }}
-                </div>
+                </div> --}}
             @endif
         </div>
     </div>

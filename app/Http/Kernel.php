@@ -17,10 +17,10 @@ class Kernel extends HttpKernel
         // \App\Http\Middleware\TrustHosts::class,
         \App\Http\Middleware\TrustProxies::class,
         \Illuminate\Http\Middleware\HandleCors::class,
-        \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
-        \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
-        \App\Http\Middleware\TrimStrings::class,
-        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        // \App\Http\Middleware\PreventRequestsDuringMaintenance::class, // Temporarily commented out for debugging
+        // \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class, // Temporarily commented out for debugging
+        // \App\Http\Middleware\TrimStrings::class, // Temporarily commented out for debugging
+        // \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class, // Temporarily commented out for debugging
     ];
 
     /**

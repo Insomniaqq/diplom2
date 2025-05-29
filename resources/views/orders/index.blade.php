@@ -3,9 +3,6 @@
         <div class="flex justify-between items-center">
             <h2 class="text-xl font-semibold">Заказы</h2>
             <div class="flex gap-2">
-                <a href="{{ route('orders.archived') }}" class="btn btn-secondary">
-                    <i class="fa-solid fa-box-archive"></i> Архив заказов
-                </a>
                 <a href="{{ route('orders.create') }}" class="btn btn-primary">
                     <i class="fa-solid fa-plus"></i> Новый заказ
                 </a>
@@ -86,13 +83,6 @@
                                     <button type="submit" class="btn btn-primary btn-sm">Отметить как полученный</button>
                                 </form>
                             @endif
-                            {{-- Кнопка архивации --}}
-                            <form action="{{ route('orders.archive', $order) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-sm btn-secondary" @if($order->status === 'archived') disabled @endif>
-                                    <i class="fa-solid fa-box-archive"></i> В архив
-                                </button>
-                            </form>
                         </div>
                     </td>
                 </tr>

@@ -13,9 +13,9 @@
                     <input type="number" name="year" id="year" value="{{ $year }}" min="2000" max="2100" class="form-input w-24">
                     <button type="submit" class="btn btn-primary">Показать</button>
                 </form>
-                <div class="flex flex-col items-center" style="margin-bottom: 0.5rem; max-width: 200px;">
-                    <div style="width:180px; height:180px; display:flex; align-items:center; justify-content:center;">
-                        <canvas id="suppliersChart" width="180" height="180" style="display:block; max-width:180px; max-height:180px;"></canvas>
+                <div class="flex flex-col items-center" style="margin-bottom: 0.5rem; max-width: 300px;">
+                    <div style="width:250px; height:250px; display:flex; align-items:center; justify-content:center;">
+                        <canvas id="suppliersChart" width="250" height="250" style="display:block; max-width:250px; max-height:250px;"></canvas>
                     </div>
                     <div class="text-gray-500 text-xs mt-1">Наведите на сегмент, чтобы увидеть детали</div>
                 </div>
@@ -45,7 +45,7 @@
     <script>
         const ctx = document.getElementById('suppliersChart').getContext('2d');
         const data = {
-            labels: [@foreach($data as $row) '{{ $row['name'] }}', @endforeach],
+            labels: [@foreach($data as $row) '{!! $row['name'] !!}', @endforeach],
             datasets: [{
                 label: 'Сумма контрактов',
                 data: [@foreach($data as $row) {{ $row['sum'] }}, @endforeach],

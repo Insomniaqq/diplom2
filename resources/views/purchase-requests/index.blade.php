@@ -80,12 +80,6 @@
                                     <i class="fa-solid fa-file-invoice-dollar"></i> Создать заказ
                                 </a>
                             @endif
-                            <form action="{{ route('purchase-requests.archive', $request) }}" method="POST" class="inline">
-                                @csrf
-                                <button type="submit" class="btn btn-sm btn-secondary">
-                                    <i class="fa-solid fa-box-archive"></i> В архив
-                                </button>
-                            </form>
                         </div>
                     </td>
                 </tr>

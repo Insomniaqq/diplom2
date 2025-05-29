@@ -16,7 +16,7 @@
                 }
             @endphp
             <div class="mb-4" style="color: #dc2626;">
-                {{ $statusMessage }}
+                {!! $statusMessage !!}
             </div>
         @endif
         <form method="POST" action="{{ route('login') }}" autocomplete="off" novalidate>

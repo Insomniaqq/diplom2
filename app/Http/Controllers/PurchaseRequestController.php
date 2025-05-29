@@ -132,24 +132,6 @@ class PurchaseRequestController extends Controller
     {
         $purchaseRequest = PurchaseRequest::findOrFail($id);
         $oldStatus = $purchaseRequest->status;
-        // Если админ завершает заявку
-        if ($request->has('status') && $request->input('status') === 'completed') {
-            $purchaseRequest->update(['status' => 'completed']);
-            \App\Models\PurchaseRequestStatusLog::create([
-                'purchase_request_id' => $purchaseRequest->id,
-                'old_status' => $oldStatus,
-                'new_status' => 'completed',
-                'user_id' => auth()->id(),
-            ]);
-            // Уведомление инициатору
-            $purchaseRequest->requester->notify(new \App\Notifications\SystemEventNotification(
-                'Заявка завершена',
-                'Ваша заявка на закупку была завершена.',
-                route('purchase-requests.show', $purchaseRequest->id)
-            ));
-            return redirect()->route('purchase-requests.show', $purchaseRequest->id)
-                ->with('success', 'Заявка успешно завершена.');
-        }
         // Обычное обновление заявки
         $validated = $request->validate([
             'material_id' => 'required|exists:materials,id',
@@ -173,6 +155,32 @@ class PurchaseRequestController extends Controller
         ));
         return redirect()->route('purchase-requests.index')
             ->with('success', 'Заявка на закупку успешно обновлена.');
+    }
+
+    public function complete(PurchaseRequest $purchaseRequest)
+    {
+        $this->authorize('approve', $purchaseRequest);
+
+        $oldStatus = $purchaseRequest->status;
+
+        $purchaseRequest->update(['status' => 'completed']);
+
+        \App\Models\PurchaseRequestStatusLog::create([
+            'purchase_request_id' => $purchaseRequest->id,
+            'old_status' => $oldStatus,
+            'new_status' => 'completed',
+            'user_id' => auth()->id(),
+        ]);
+
+        // Уведомление инициатору
+        $purchaseRequest->requester->notify(new \App\Notifications\SystemEventNotification(
+            'Заявка завершена',
+            'Ваша заявка на закупку была завершена.',
+            route('purchase-requests.show', $purchaseRequest->id)
+        ));
+
+        return redirect()->route('purchase-requests.show', $purchaseRequest->id)
+            ->with('success', 'Заявка успешно завершена.');
     }
 
     /**

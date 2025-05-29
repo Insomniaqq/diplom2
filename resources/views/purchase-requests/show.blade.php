@@ -30,13 +30,8 @@
                             </form>
                         @endif
                         @if($request->status === 'approved')
-                            <form action="{{ route('purchase-requests.update', $request->id) }}" method="POST">
+                            <form action="{{ route('purchase-requests.complete', $request) }}" method="POST">
                                 @csrf
-                                @method('PUT')
-                                <input type="hidden" name="status" value="completed">
-                                <input type="hidden" name="material_id" value="{{ $request->material_id }}">
-                                <input type="hidden" name="quantity" value="{{ $request->quantity }}">
-                                <input type="hidden" name="justification" value="{{ $request->justification }}">
                                 <button type="submit" class="btn btn-primary">Завершить</button>
                             </form>
                         @endif

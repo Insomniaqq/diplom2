@@ -227,10 +227,12 @@ class OrderController extends Controller
 
     public function archived()
     {
+        dd('Reached archived method'); // Temporary debug statement
         $orders = Order::with(['supplier', 'purchaseRequest'])
             ->archived()
             ->latest()
-            ->paginate(10);
+            ->get();
+        dd($orders);
         return view('orders.archived', compact('orders'));
     }
 }
