@@ -65,10 +65,6 @@
                         <span style="color:#a21caf; font-size:1.4em;"><i class="fa-solid fa-file-invoice-dollar"></i></span>
                         <span><b>Заказы:</b> <span style="color:#a21caf;">Управление заказами.</span> Создание и отслеживание статуса заказов.</span>
                     </li>
-                    <li style="margin-bottom:1.7em; display:flex; align-items:flex-start; gap:1.2em;">
-                        <span style="color:#16a34a; font-size:1.4em;"><i class="fa-solid fa-file-export"></i></span>
-                        <span><b>Экспорт:</b> <span style="color:#16a34a;">Выгрузка данных в Excel и PDF.</span></span>
-                    </li>
                 </ul>
             @elseif(auth()->user()->hasRole('Employee'))
                 <ul style="max-width:900px; margin:2.5rem auto; font-size:1.35em; color:#1e293b; list-style:none; padding:0;">
