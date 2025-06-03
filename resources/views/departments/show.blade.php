@@ -120,7 +120,9 @@
                 <div class="mt-6">
                     <a href="{{ route('departments.index') }}" class="btn btn-secondary">Назад к списку</a>
                     <a href="{{ route('departments.edit', $department) }}" class="btn btn-warning">Редактировать</a>
-                    <a href="{{ route('departments.norms', $department) }}" class="btn btn-info">Месячные нормы</a>
+                    @if(auth()->check() && (auth()->user()->role === 'Admin' || auth()->user()->role === 'Manager'))
+                        <a href="{{ route('departments.norms', $department) }}" class="btn btn-info">Месячные нормы</a>
+                    @endif
                 </div>
             </div>
         </div>

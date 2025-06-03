@@ -12,6 +12,8 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\BudgetReportController;
+use App\Http\Controllers\SupplierReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,6 +81,9 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
         Route::get('/reports/requests', [ReportController::class, 'requests'])->name('reports.requests');
         Route::get('/reports/suppliers', [ReportController::class, 'suppliers'])->name('reports.suppliers');
         
+        // Новый маршрут для аналитики по расходу материалов
+        Route::get('/reports/materials-consumption', [ReportController::class, 'materialsConsumption'])->name('reports.materials-consumption');
+        
         Route::get('departments/{department}/norms', [ReportController::class, 'monthlyNorms'])->name('departments.norms');
         
         Route::post('purchase-requests/{purchaseRequest}/approve', [PurchaseRequestController::class, 'approve'])->name('purchase-requests.approve');
@@ -127,3 +132,11 @@ Route::middleware(['auth:sanctum', 'auth'])->group(function () {
 
 // Move the archived orders route here without any middleware for debugging
 Route::get('orders/archived', [OrderController::class, 'archived'])->name('orders.archived');
+
+Route::get('/reports/budget/download/{format}', [BudgetReportController::class, 'download'])
+    ->name('reports.budget.download')
+    ->middleware(['auth', 'role:Admin,Manager']);
+
+Route::get('/reports/suppliers/download/{format}', [SupplierReportController::class, 'download'])
+    ->name('reports.suppliers.download')
+    ->middleware(['auth', 'role:Admin,Manager']);

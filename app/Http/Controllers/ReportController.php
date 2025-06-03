@@ -7,6 +7,7 @@ use App\Models\Budget;
 use App\Models\Order;
 use App\Models\PurchaseRequest;
 use Carbon\Carbon;
+use App\Models\MaterialDistribution;
 
 class ReportController extends Controller
 {
@@ -120,5 +121,61 @@ class ReportController extends Controller
             'requests' => $requests,
             'orders' => $orders,
         ]);
+    }
+
+    // Аналитика по расходу материалов
+    public function materialsConsumption()
+    {
+        $year = request('year', Carbon::now()->year);
+        $month = request('month', Carbon::now()->month);
+
+        // Данные для графика: расход и поступление по дням текущего месяца
+        $startDate = Carbon::create($year, $month, 1)->startOfDay();
+        $endDate = $startDate->copy()->endOfMonth()->endOfDay();
+
+        $dailyDistributions = MaterialDistribution::whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('DATE(created_at) as date, SUM(quantity) as total_distributed')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->keyBy('date');
+
+        // Предполагая, что поступление материалов записывается в orders или где-то еще
+        // Для примера, возьмем завершенные заказы как поступление
+        $dailyArrivals = \App\Models\Order::where('status', 'completed')
+            ->whereBetween('updated_at', [$startDate, $endDate]) // Используем updated_at для завершенных заказов
+            ->selectRaw('DATE(updated_at) as date, SUM(total_amount) as total_arrived') // Суммируем total_amount как стоимость
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->keyBy('date');
+
+        $daysInMonth = $startDate->daysInMonth;
+        $dates = [];
+        $distributions = [];
+        $arrivals = [];
+
+        for ($i = 1; $i <= $daysInMonth; $i++) {
+            $date = $startDate->copy()->addDays($i - 1)->toDateString();
+            $dates[] = $i;
+            $distributions[] = $dailyDistributions->has($date) ? $dailyDistributions[$date]->total_distributed : 0;
+            $arrivals[] = $dailyArrivals->has($date) ? $dailyArrivals[$date]->total_arrived : 0;
+        }
+
+        // Данные для таблицы: какой раздел сколько потратил материалов
+        $departmentConsumption = \App\Models\Department::with(['distributions' => function($query) use ($year, $month) {
+            $query->whereYear('created_at', $year)
+                  ->whereMonth('created_at', $month);
+        }])->get();
+
+        $consumptionData = $departmentConsumption->map(function($department) use ($year, $month) {
+             $totalConsumption = $department->distributions->sum('quantity');
+             return [
+                 'name' => $department->name,
+                 'consumption' => $totalConsumption,
+             ];
+        })->sortByDesc('consumption');
+
+        return view('reports.materials-consumption', compact('dates', 'distributions', 'arrivals', 'consumptionData', 'year', 'month'));
     }
 }

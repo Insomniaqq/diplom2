@@ -83,6 +83,7 @@
                             <a href="{{ route('reports.requests') }}" class="dropdown-item">Заявки</a>
                             <a href="{{ route('reports.monthly-norms') }}" class="dropdown-item">Месячные нормы</a>
                             <a href="{{ route('reports.suppliers') }}" class="dropdown-item">Поставщики</a>
+                            <a href="{{ route('reports.materials-consumption') }}" class="dropdown-item">Расход материалов</a>
                         </div>
                     </div>
                     <a href="{{ route('purchase-requests.index') }}" class="{{ request()->routeIs('purchase-requests.*') ? 'active' : '' }}">
@@ -117,6 +118,7 @@
                             <a href="{{ route('reports.requests') }}" class="dropdown-item">Заявки</a>
                             <a href="{{ route('reports.monthly-norms') }}" class="dropdown-item">Месячные нормы</a>
                             <a href="{{ route('reports.suppliers') }}" class="dropdown-item">Поставщики</a>
+                            <a href="{{ route('reports.materials-consumption') }}" class="dropdown-item">Расход материалов</a>
                         </div>
                     </div>
                     <a href="{{ route('purchase-requests.index') }}" class="{{ request()->routeIs('purchase-requests.*') ? 'active' : '' }}">
