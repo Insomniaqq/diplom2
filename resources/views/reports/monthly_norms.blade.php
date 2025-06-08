@@ -5,11 +5,28 @@
         </h2>
     </x-slot>
 
+    @php
+        \Carbon\Carbon::setLocale('ru');
+    @endphp
+
     <div class="container">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white border-b border-gray-200">
                 <h1 class="text-2xl font-bold mb-4">Отчет по месячным нормам использования материалов</h1>
-                <p class="mb-4 text-gray-600">Статистика за {{ now()->format('F Y') }}</p>
+                
+                <form method="GET" action="{{ route('reports.monthly-norms') }}" class="mb-6 flex items-center gap-2">
+                    <label for="month">Месяц:</label>
+                    <select name="month" id="month" class="form-select w-32">
+                        @for ($m = 1; $m <= 12; $m++)
+                            <option value="{{ $m }}" {{ $month == $m ? 'selected' : '' }}>{{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}</option>
+                        @endfor
+                    </select>
+                    <label for="year">Год:</label>
+                    <input type="number" name="year" id="year" value="{{ $year }}" min="2000" max="2100" class="form-input w-24">
+                    <button type="submit" class="btn btn-primary">Показать</button>
+                </form>
+
+                <p class="mb-4 text-gray-600">Статистика за {{ \Carbon\Carbon::create($year, $month)->translatedFormat('F Y') }}</p>
 
                 @if(empty($reportData))
                     <p>Нет данных о нормах использования материалов за текущий месяц.</p>

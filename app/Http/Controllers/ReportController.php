@@ -63,11 +63,14 @@ class ReportController extends Controller
         return view('reports.suppliers', compact('year', 'data'));
     }
 
-    public function monthlyNorms()
+    public function monthlyNorms(Request $request)
     {
-        $departments = \App\Models\Department::with(['materials', 'distributions' => function($query) {
-            $query->whereMonth('created_at', now()->month)
-                  ->whereYear('created_at', now()->year);
+        $year = $request->input('year', Carbon::now()->year);
+        $month = $request->input('month', Carbon::now()->month);
+
+        $departments = \App\Models\Department::with(['materials', 'distributions' => function($query) use ($year, $month) {
+            $query->whereMonth('created_at', $month)
+                  ->whereYear('created_at', $year);
         }])->get();
 
         $reportData = [];
@@ -90,7 +93,7 @@ class ReportController extends Controller
             }
         }
 
-        return view('reports.monthly_norms', compact('reportData'));
+        return view('reports.monthly_norms', compact('reportData', 'year', 'month'));
     }
 
     public function getDashboardStats()
