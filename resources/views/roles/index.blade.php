@@ -15,7 +15,6 @@
                     <th>Название</th>
                     <th>Описание</th>
                     <th>Пользователей</th>
-                    <th>Действия</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,13 +30,7 @@
                         <td>{{ $roleTranslations[$role->name] ?? $role->name }}</td>
                         <td>{{ $role->description }}</td>
                         <td>{{ $userCounts[$role->id] ?? 0 }}</td>
-                        <td>
-                            <form action="{{ route('roles.destroy', $role) }}" method="POST" style="display:inline-block;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Удалить роль?')">Удалить</button>
-                            </form>
-                        </td>
+                        
                     </tr>
                 @endforeach
             </tbody>
